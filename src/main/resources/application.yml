@@ -1,0 +1,30 @@
+# 端口
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+spring:
+  application:
+    name: picture-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/picture
+    username: root
+    password: 123456
+mybatis-plus:
+  configuration:
+    # MyBatis 配置
+    map-underscore-to-camel-case: false
+    # 在开发环境打印出日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+knife4j:
+  enable: true
+  openapi:
+    title: openapi
+    description: 你好
+    group:
+      default:
+        group-name: 分组名称
+        api-rule: package
+        api-rule-resources:
+          - com.itkd.picture.controller
