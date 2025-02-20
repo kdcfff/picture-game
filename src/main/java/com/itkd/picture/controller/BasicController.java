@@ -16,6 +16,8 @@
 
 package com.itkd.picture.controller;
 
+import com.itkd.picture.common.BaseResponse;
+import com.itkd.picture.common.ResultUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +33,8 @@ public class BasicController {
     // http://127.0.0.1:8080/hello?name=lisi
     @RequestMapping("/hello")
     @ResponseBody
-    public String hello(@RequestParam(name = "name", defaultValue = "unknown user") String name) {
-        return "Hello " + name;
+    public BaseResponse<String> hello(@RequestParam(name = "name", defaultValue = "unknown user") String name) {
+        return ResultUtils.success("hello " + name);
     }
 
     // http://127.0.0.1:8080/user
