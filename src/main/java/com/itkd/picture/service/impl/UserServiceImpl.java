@@ -1,16 +1,20 @@
 package com.itkd.picture.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.itkd.picture.exception.BusinessException;
 import com.itkd.picture.exception.ErrorCode;
+import com.itkd.picture.model.dto.UserQueryRequest;
 import com.itkd.picture.model.entity.User;
 import com.itkd.picture.mapper.UserMapper;
 import com.itkd.picture.model.enums.UserRoleEnum;
 import com.itkd.picture.model.vo.LoginUserVO;
+import com.itkd.picture.model.vo.UserVO;
 import com.itkd.picture.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.itkd.picture.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -31,6 +38,13 @@ import static com.itkd.picture.constant.UserConstant.USER_LOGIN_STATE;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         implements UserService {
 
+    /**
+     * 用户注册
+     * @param userAccount   用户账户
+     * @param userPassword  用户密码
+     * @param checkPassword 校验密码
+     * @return
+     */
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -100,6 +114,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     }
 
+    /**
+     * 将用户转换为前端需要的VO对象（脱敏）
+     * @param user
+     * @return
+     */
+    @Override
+    public UserVO getUserVO(User user) {
+        //1. 判断是否为空
+        if (user==null){
+            return null;
+        }
+        //2. 拷贝
+        UserVO userVO = new UserVO();
+        BeanUtil.copyProperties(user, userVO);
+        return userVO;
+    }
+
+    /**
+     * 将用户列表转换为前端需要的VO对象（脱敏）
+     * @param userList
+     * @return
+     */
+    @Override
+    public List<UserVO> getUserVOList(List<User> userList) {
+        if (CollectionUtil.isEmpty(userList)){
+            return new ArrayList<>();
+        }
+        return userList.stream().map(this::getUserVO).toList();
+    }
+
     @Override
     public String getEncryptPassword(String userPassword) {
         // 盐值，混淆密码
@@ -116,6 +160,58 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         BeanUtil.copyProperties(user, loginUserVO);
         return loginUserVO;
     }
+
+    @Override
+    public User getLoginUser(HttpServletRequest request) {
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        // 从数据库查询（追求性能的话可以注释，直接返回上述结果）
+        long userId = currentUser.getId();
+        currentUser = this.getById(userId);
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        return currentUser;
+    }
+
+    @Override
+    public boolean userLogout(HttpServletRequest request) {
+        // 先判断是否已登录
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
+        User currentUser = (User) userObj;
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        // 移除登录态
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        return true;
+    }
+    @Override
+    public QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
+        }
+        Long id = userQueryRequest.getId();
+        String userAccount = userQueryRequest.getUserAccount();
+        String userName = userQueryRequest.getUserName();
+        String userProfile = userQueryRequest.getUserProfile();
+        String userRole = userQueryRequest.getUserRole();
+        String sortField = userQueryRequest.getSortField();
+        String sortOrder = userQueryRequest.getSortOrder();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(ObjUtil.isNotNull(id), "id", id);
+        queryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
+        queryWrapper.like(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
+        queryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
+        queryWrapper.like(StrUtil.isNotBlank(userProfile), "userProfile", userProfile);
+        queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
+        return queryWrapper;
+    }
+
 
 
 }
