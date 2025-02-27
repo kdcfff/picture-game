@@ -11,6 +11,8 @@ spring:
     url: jdbc:mysql://localhost:3306/picture
     username: root
     password: 123456
+  profiles:
+    active: local
 mybatis-plus:
   configuration:
     # MyBatis 配置
@@ -22,9 +24,10 @@ knife4j:
   openapi:
     title: openapi
     description: 你好
+    version: 1.0.0
     group:
       default:
-        group-name: 分组名称
+        group-name:
         api-rule: package
         api-rule-resources:
           - com.itkd.picture.controller
