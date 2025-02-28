@@ -14,15 +14,19 @@ import com.itkd.picture.model.entity.User;
 import com.itkd.picture.model.vo.LoginUserVO;
 import com.itkd.picture.model.vo.UserVO;
 import com.itkd.picture.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
     @Resource
     UserService userService;
@@ -177,6 +181,7 @@ public class UserController {
         userVOPage.setRecords(userVOList);
         return ResultUtils.success(userVOPage);
     }
+
 
 
 
