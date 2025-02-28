@@ -1,4 +1,4 @@
-package com.itkd.picture.model.dto;
+package com.itkd.picture.model.dto.user;
 
 import com.itkd.picture.common.PageRequest;
 import lombok.Data;

@@ -9,7 +9,7 @@ import com.itkd.picture.constant.UserConstant;
 import com.itkd.picture.exception.BusinessException;
 import com.itkd.picture.exception.ErrorCode;
 import com.itkd.picture.exception.ThrowUtils;
-import com.itkd.picture.model.dto.*;
+import com.itkd.picture.model.dto.user.*;
 import com.itkd.picture.model.entity.User;
 import com.itkd.picture.model.vo.LoginUserVO;
 import com.itkd.picture.model.vo.UserVO;
@@ -17,11 +17,9 @@ import com.itkd.picture.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.List;
 
 @RestController

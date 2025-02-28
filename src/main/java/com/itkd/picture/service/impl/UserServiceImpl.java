@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.itkd.picture.exception.BusinessException;
 import com.itkd.picture.exception.ErrorCode;
-import com.itkd.picture.model.dto.UserQueryRequest;
+import com.itkd.picture.model.dto.user.UserQueryRequest;
 import com.itkd.picture.model.entity.User;
 import com.itkd.picture.mapper.UserMapper;
 import com.itkd.picture.model.enums.UserRoleEnum;

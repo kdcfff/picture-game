@@ -1,7 +1,7 @@
 package com.itkd.picture.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.itkd.picture.model.dto.UserQueryRequest;
+import com.itkd.picture.model.dto.user.UserQueryRequest;
 import com.itkd.picture.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.itkd.picture.model.vo.LoginUserVO;
