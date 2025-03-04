@@ -10,8 +10,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itkd.picture.exception.BusinessException;
 import com.itkd.picture.exception.ErrorCode;
 import com.itkd.picture.model.dto.user.UserQueryRequest;
+import com.itkd.picture.model.entity.Picture;
 import com.itkd.picture.model.entity.User;
 import com.itkd.picture.mapper.UserMapper;
+import com.itkd.picture.model.enums.PictureReviewStatusEnum;
 import com.itkd.picture.model.enums.UserRoleEnum;
 import com.itkd.picture.model.vo.LoginUserVO;
 import com.itkd.picture.model.vo.UserVO;
@@ -24,6 +26,7 @@ import org.springframework.util.DigestUtils;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static com.itkd.picture.constant.UserConstant.USER_LOGIN_STATE;
@@ -45,7 +48,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @param checkPassword 校验密码
      * @return
      */
-
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
         // 1. 校验
@@ -211,6 +213,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         queryWrapper.orderBy(StrUtil.isNotEmpty(sortField), sortOrder.equals("ascend"), sortField);
         return queryWrapper;
     }
+
+    @Override
+    public boolean isAdmin(User user) {
+        return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
+    }
+
+
 
 
 

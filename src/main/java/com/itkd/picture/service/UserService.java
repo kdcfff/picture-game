@@ -1,11 +1,15 @@
 package com.itkd.picture.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.itkd.picture.model.dto.picture.PictureUploadRequest;
 import com.itkd.picture.model.dto.user.UserQueryRequest;
+import com.itkd.picture.model.entity.Picture;
 import com.itkd.picture.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.itkd.picture.model.vo.LoginUserVO;
+import com.itkd.picture.model.vo.PictureVO;
 import com.itkd.picture.model.vo.UserVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -83,4 +87,24 @@ public interface UserService extends IService<User> {
 
 
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
+
+    /**
+     * 是否为管理员
+     *
+     * @param user
+     * @return
+     */
+    boolean isAdmin(User user);
+
+    /**
+     * 填充审核参数，方便其他方法使用
+     *
+     * @param picture   picture
+     * @param loginUser 登录的用户
+     */
+
+
+
+
 }
