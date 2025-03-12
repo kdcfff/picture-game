@@ -31,6 +31,7 @@ import java.util.List;
 
 import static cn.hutool.http.HttpStatus.HTTP_OK;
 
+@Deprecated
 @Service
 @Slf4j
 public class FileManager {

@@ -42,6 +42,8 @@ public class FilePictureUploadImpl extends PictureUploadTemplate {
 
     @Override
     protected String getOriginFilename(Object source) {
-        return null;
+        final MultipartFile multipartFile = (MultipartFile) source;
+        String originalFilename = multipartFile.getOriginalFilename();
+        return originalFilename;
     }
 }

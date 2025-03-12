@@ -1,22 +1,16 @@
 package com.itkd.picture.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpStatus;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.http.Method;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.itkd.picture.exception.BusinessException;
 import com.itkd.picture.exception.ErrorCode;
 import com.itkd.picture.exception.ThrowUtils;
-import com.itkd.picture.manager.FileManager;
+import com.itkd.picture.manager.upload.FilePictureUploadImpl;
+import com.itkd.picture.manager.upload.PictureUploadTemplate;
+import com.itkd.picture.manager.upload.UrlUploadImpl;
 import com.itkd.picture.mapper.PictureMapper;
 import com.itkd.picture.model.dto.picture.PictureQueryRequest;
 import com.itkd.picture.model.dto.picture.PictureReviewRequest;
@@ -29,13 +23,12 @@ import com.itkd.picture.model.vo.PictureVO;
 import com.itkd.picture.model.vo.UserVO;
 import com.itkd.picture.service.PictureService;
 import com.itkd.picture.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,23 +38,33 @@ import java.util.stream.Collectors;
  * @createDate 2025-02-28 19:26:13
  */
 @Service
+@Slf4j
 public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         implements PictureService {
 
+/*
     @Resource
     FileManager fileManager;
+*/
 
     @Resource
     UserService userService;
+    @Resource
+    FilePictureUploadImpl filePictureUploadImpl;
+    @Resource
+    UrlUploadImpl urlUploadImpl;
+
+
+
     /**
      * 上传图片
-     * @param multipartFile
+     * @param inputSource
      * @param pictureUploadRequest
      * @param loginUser
      * @return
      */
     @Override
-    public PictureVO uploadPicture(MultipartFile multipartFile, PictureUploadRequest pictureUploadRequest, User loginUser) {
+    public PictureVO uploadPicture(Object inputSource, PictureUploadRequest pictureUploadRequest, User loginUser) {
         PictureVO pictureVO = new PictureVO();
         // 校验登录
         ThrowUtils.throwIf(loginUser == null, ErrorCode.NO_AUTH_ERROR);
@@ -78,7 +81,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         }
         //上传图片
         String uploadPathPrefix = String.format("public/%s", loginUser.getId());
-        UploadPictureResult uploadPictureResult = fileManager.uploadPicture(multipartFile, uploadPathPrefix);
+        PictureUploadTemplate picUploadTemplate = filePictureUploadImpl;
+        if (inputSource instanceof String){
+            picUploadTemplate=urlUploadImpl;
+        }
+        UploadPictureResult uploadPictureResult = picUploadTemplate.uploadPicture(inputSource, uploadPathPrefix);
+        log.info(uploadPictureResult.toString());
         Picture picture=new Picture();
         picture.setUrl(uploadPictureResult.getUrl());
         picture.setName(uploadPictureResult.getPicName());
@@ -270,12 +278,5 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
     }
 
 
-
-
-
-
 }
-
-
-
 
